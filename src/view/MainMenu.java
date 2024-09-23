@@ -14,10 +14,6 @@ import java.util.Scanner;
 public class MainMenu {
     static HotelResource hotelResource = HotelResource.getHotelResource();
 
-    public MainMenu() {
-        init();
-    }
-
     public static void init(){
         String title = """
                 --------------------------------------------------------------
@@ -203,6 +199,6 @@ public class MainMenu {
     }
 
     public static void main(String[] args){
-        new MainMenu();
+        init();
     }
 }
