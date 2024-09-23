@@ -1,4 +1,3 @@
 package model;
 
-public enum RoomType {
-}
+public enum RoomType {SINGLE,DOUBLE}

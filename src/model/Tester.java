@@ -1,9 +1,4 @@
-package view;
-
-import model.Customer;
-import model.Reservation;
-import model.Room;
-import model.RoomType;
+package model;
 
 import java.time.LocalDate;
 
