@@ -147,14 +147,9 @@ public class MainMenu {
                                 System.out.println("Please create your account before continuing.\n");
                                 createAccount();
                             }
-                            if(hotelResource.bookARoom(email,
+                            System.out.println(hotelResource.bookARoom(email,
                                     hotelResource.getRoom(roomNumber),
-                                    checkInDate,checkoutDate) != null){
-                                System.out.println("Reservation booked successfully\n");
-                                System.out.println(hotelResource.getCustomerReservations(email));
-                            }else{
-                                System.out.println("Failed to book reservation.");
-                            }
+                                    checkInDate,checkoutDate));
                         }
                         valid = false;
                         break;
