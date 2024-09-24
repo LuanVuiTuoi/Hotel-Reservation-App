@@ -7,14 +7,23 @@ import java.util.*;
 
 
 public class ReservationService {
-    private static ReservationService reservationService;
+    private static volatile ReservationService reservationService;
     private final Set<IRoom> rooms = new HashSet<>();
     private final Set<Reservation> reservations = new HashSet<>();
 
-    public ReservationService(){}
+    private ReservationService(){}
+
+    /**
+     * Singleton Lazy initialization with double locking.
+     * @return Instance of Reservation Service Class
+     */
     public static ReservationService getReservationService(){
         if(reservationService == null){
-            reservationService = new ReservationService();
+            synchronized (ReservationService.class){
+                if(reservationService == null)
+                    reservationService = new ReservationService();
+            }
+
         }
         return reservationService;
     }
@@ -50,9 +59,16 @@ public class ReservationService {
      *
      */
     public Reservation reserveARoom(Customer customer, IRoom room, LocalDate checkInDate, LocalDate checkOutDate){
-        Reservation reservation = new Reservation(customer,room,checkInDate,checkOutDate);
-        reservations.add(reservation);
-        return reservation;
+        Reservation newReservation;
+        if(reservations.contains(new Reservation(customer,room,checkInDate,checkOutDate))){
+            throw new IllegalArgumentException("\nReservations already exists\n");
+        }
+        if(!findRooms(checkInDate,checkOutDate).contains(room)){
+            throw new IllegalArgumentException("\nRoom not available\n");
+        }
+        newReservation = new Reservation(customer,room,checkInDate,checkOutDate);
+        reservations.add(newReservation);
+        return newReservation;
     }
 
     /**
@@ -69,14 +85,12 @@ public class ReservationService {
     public Collection<IRoom> findRooms(LocalDate checkInDate, LocalDate checkOutDate){
         if(checkInDate.isBefore(LocalDate.now()) ||
                 checkOutDate.isBefore(LocalDate.now())){
-            System.out.println("Check-in date is in the past please pick date after current date:" + LocalDate.now());
-            return Collections.emptyList();
+            throw new IllegalArgumentException("\nDate is in the past please pick date after current date:\n" + LocalDate.now());
         }
         if(checkInDate.isAfter(checkOutDate) ||
                 checkInDate.isEqual(checkOutDate) ||
                 checkOutDate.isBefore(checkInDate)){
-            System.out.println("Date Range not valid, please check your dates and try again.");
-            return Collections.emptyList();
+            throw new IllegalArgumentException("\nDate Range not valid, please check your dates and try again.\n");
         }
 
         if(reservations.isEmpty() && !rooms.isEmpty()){

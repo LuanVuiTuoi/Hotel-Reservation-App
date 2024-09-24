@@ -148,7 +148,7 @@ public class AdminMenu {
             MainMenu.hotelResource.createACustomer("jane@domain.com","jane","doe");
 
             // Populate List of Rooms
-            for(int rNum = 100; rNum < 105; rNum++){
+            for(int rNum = 100; rNum < 102; rNum++){
                 rooms.add(new Room(
                         Integer.toString(rNum),
                         RandomGenerator.getDefault().nextDouble(999.99),
@@ -159,9 +159,9 @@ public class AdminMenu {
 
             MainMenu.hotelResource.bookARoom(
                     "john@domain.com",
-                    new Room("106", 999.99,RoomType.DOUBLE),
+                    new Room("100", 999.99,RoomType.DOUBLE),
                     LocalDate.now(),
-                    LocalDate.now().plusDays(1)
+                    LocalDate.now().plusDays(10)
             );
 
         } catch (Exception e) {

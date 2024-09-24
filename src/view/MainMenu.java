@@ -69,7 +69,6 @@ public class MainMenu {
                 System.out.println("Invalid Input! Try Again");
             }
         }
-
     }
 
     /**
@@ -85,6 +84,7 @@ public class MainMenu {
         String email;
         String roomNumber;
         Collection<IRoom> availableRooms;
+        boolean valid;
 
         Scanner scanner = new Scanner(System.in);
         try{
@@ -95,47 +95,80 @@ public class MainMenu {
             checkoutDate = LocalDate.parse(scanner.nextLine());
 
             availableRooms = hotelResource.findARoom(checkInDate,checkoutDate);
+            System.out.println("List of Available Rooms:");
+            if(availableRooms.isEmpty()) {
+                System.out.println("\nNo Room Available for Check-in: " +
+                        checkInDate + " - Checkout: " + checkoutDate);
+                System.out.println("Checking if rooms are available 7 days from date range.");
+                System.out.println("Rooms for Check-in: " +
+                        checkInDate.plusDays(7) + " - Checkout: " + checkoutDate + "\n");
 
-            if(!availableRooms.isEmpty()){
-                System.out.println("List of Available Rooms:");
-                for (IRoom room : availableRooms){
-                    System.out.println("------");
-                    System.out.print(room);
-                }
-
-                System.out.println();
-                System.out.println("Please select a room number you would like to reserve");
-                roomNumber = scanner.nextLine();
-                System.out.println("Please enter your email for the reservation");
-                email = scanner.nextLine();
-
-                if(hotelResource.getRoom(roomNumber) == null){
-                    System.out.println("Failed to book reservation");
-                    System.out.println("Please check if Room exists!");
-                    System.out.println("Please use Admin Service page to add rooms.\n");
+                availableRooms = hotelResource.findARoom(checkInDate.plusDays(7), checkoutDate.plusDays(7));
+                if(!availableRooms.isEmpty()){
+                    do {
+                        valid = true;
+                        System.out.println("Would you like to change reservation date? Enter yes or no");
+                        String choice = scanner.nextLine();
+                        if (choice.equalsIgnoreCase("yes")){
+                            valid = false;
+                            checkInDate = checkInDate.plusDays(7);
+                            checkoutDate = checkoutDate.plusDays(7);
+                        }
+                        if (choice.equalsIgnoreCase("no")){
+                            valid = false;
+                        }
+                    } while (valid);
                 }else{
-                    if(hotelResource.getCustomer(email) == null){
-                        System.out.println("Failed to book reservation");
-                        System.out.println("Please create your account before continuing.\n");
-                        createAccount();
-                    }
-                    System.out.println("Reservation booked successfully\n");
-                    System.out.println(hotelResource.bookARoom(email,
-                            hotelResource.getRoom(roomNumber),
-                            checkInDate,checkoutDate));
-
+                    System.out.println("\nApologies no rooms are available come back next time.\n");
                 }
 
-            }else{
-                System.out.println("No Rooms Available at current date range. Please contact admin.");
             }
 
+            for (IRoom room : availableRooms){
+                System.out.println("------");
+                System.out.print(room);
+            }
+            valid = true;
+
+            do{
+                System.out.println("Would you like to continue with reservation? Enter yes or no");
+                switch (scanner.nextLine()){
+                    case "yes":
+                        System.out.println("Please select a room number you would like to reserve");
+                        roomNumber = scanner.nextLine();
+                        System.out.println("Please enter your email for the reservation");
+                        email = scanner.nextLine();
+
+                        if(hotelResource.getRoom(roomNumber) == null){
+                            System.out.println("Failed to reserve room: Invalid Room Number");
+                        }else{
+                            if(hotelResource.getCustomer(email) == null){
+                                System.out.println("Account not found");
+                                System.out.println("Please create your account before continuing.\n");
+                                createAccount();
+                            }
+                            if(hotelResource.bookARoom(email,
+                                    hotelResource.getRoom(roomNumber),
+                                    checkInDate,checkoutDate) != null){
+                                System.out.println("Reservation booked successfully\n");
+                                System.out.println(hotelResource.getCustomerReservations(email));
+                            }else{
+                                System.out.println("Failed to book reservation.");
+                            }
+                        }
+                        valid = false;
+                        break;
+                    case "no":
+                        valid = false;
+                        break;
+                    default:
+                        System.out.println("Invalid Choice");
+                }
+            }while (valid);
         }catch (Exception e){
-            System.out.println("Something Went Wrong! Try Again");
+
             System.out.println(e.getMessage());
         }
-
-        System.out.println("Returning to Menu...");
     }
 
     /**
@@ -156,15 +189,12 @@ public class MainMenu {
             }
 
         }catch (Exception e){
-            System.out.println("Something Went Wrong! Try Again");
             System.out.println(e.getMessage());
         }
-
-        System.out.println("Returning to Menu...");
     }
 
     /**
-     * Create new customer using email, first name and last name..
+     * Create new customer using email, first name and last name.
      */
     public static void createAccount(){
         String email;
@@ -183,12 +213,10 @@ public class MainMenu {
         try{
             hotelResource.createACustomer(email,firstName,lastName);
         }catch (Exception e){
-            System.out.println("Something Went Wrong! Try Again");
             System.out.println(e.getMessage());
         }
-
-        System.out.println("Returning to Menu...");
     }
+
     public static void adminMenu(){
         String message = """
                 Leaving Hotel Services Page...

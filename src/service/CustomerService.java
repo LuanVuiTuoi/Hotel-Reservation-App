@@ -7,15 +7,23 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class CustomerService {
-    private static CustomerService customerService;
+    private static volatile CustomerService customerService;
     private final Map<String,Customer> customers = new HashMap<>();
 
-    public CustomerService() {
+    private CustomerService() {
     }
 
+    /**
+     * Singleton Lazy initialization with double locking.
+     * @return Instance of the CustomerService class.
+     */
     public static CustomerService getCustomerService() {
         if(customerService == null){
-            customerService = new CustomerService();
+            synchronized (CustomerService.class){
+                if(customerService == null)
+                    customerService = new CustomerService();
+            }
+
         }
         return customerService;
     }

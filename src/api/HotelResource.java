@@ -36,8 +36,7 @@ public class HotelResource {
     }
 
     public Reservation bookARoom(String customerEmail, IRoom room, LocalDate checkInDate, LocalDate checkOutDate){
-        Customer customer = customerService.getCustomer(customerEmail);
-        return reservationService.reserveARoom(customer,room,checkInDate,checkOutDate);
+        return reservationService.reserveARoom(customerService.getCustomer(customerEmail),room,checkInDate,checkOutDate);
     }
 
     public Collection<Reservation> getCustomerReservations(String customerEmail){

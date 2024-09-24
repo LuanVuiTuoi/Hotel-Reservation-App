@@ -19,10 +19,10 @@ public class Reservation {
     public boolean equals(Object o) {
         if (this == o) return true;
         if (!(o instanceof Reservation that)) return false;
-        return Objects.equals(customer, that.customer) &&
-                Objects.equals(room, that.room) &&
-                Objects.equals(checkInDate, that.checkInDate) &&
-                Objects.equals(checkOutDate, that.checkOutDate);
+        return Objects.equals(this.customer, that.customer) &&
+                Objects.equals(this.room, that.room) &&
+                Objects.equals(this.checkInDate, that.checkInDate) &&
+                Objects.equals(this.checkOutDate, that.checkOutDate);
     }
 
     @Override
@@ -33,12 +33,14 @@ public class Reservation {
     @Override
     public String toString(){
         return String.format("Customer: %s %s%n" +
-                "Room Number: %s%n" +
-                "Check-in Date: %s%n" +
-                "Check-out Date: %s%n",
+                        "Room Number: %s%n" +
+                        "Price: %.2f per night%n" +
+                        "Check-in Date: %s%n" +
+                        "Check-out Date: %s%n",
                 customer.getFirstName(),
                 customer.getLastName(),
                 room.getRoomNumber(),
+                room.getRoomPrice(),
                 checkInDate.toString(),
                 checkOutDate.toString());
     }
